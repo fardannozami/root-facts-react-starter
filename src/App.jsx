@@ -11,15 +11,6 @@ function App() {
   const [currentTone, setCurrentTone] = useState('normal');
 
   // TODO [Basic] Inisialisasi layanan deteksi, kamera, dan generator fakta saat aplikasi dimuat
-  useEffect(() => {
-    const initServices = async () => {
-      try {
-        actions.setModelStatus('Memuat Model AI...');
-      } catch (error) {
-
-      }
-    }
-  }, [])
 
   // TODO [Basic] Bersihkan sumber daya saat komponen ditinggalkan
 
@@ -31,6 +22,15 @@ function App() {
 
   // TODO [Skilled] Fungsi untuk menyalin fakta ke clipboard
 
+  useEffect(() => {
+    const initServices = async () => {
+      try {
+        actions.setModelStatus('Memuat Model AI...');
+      } catch (error) {
+
+      }
+    }
+  }, [])
   return (
     <div className="app-container">
       <Header modelStatus={state.modelStatus} />
