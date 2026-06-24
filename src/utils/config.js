@@ -3,7 +3,7 @@ export const APP_CONFIG = {
   analyzingDelay: 2000,
   factsGenerationDelay: 2000,
   detectionRetryInterval: 100,
-  cameraStartDelay: 500
+  cameraStartDelay: 1500
 };
 
 export const TONE_CONFIG = {

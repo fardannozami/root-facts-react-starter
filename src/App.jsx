@@ -60,10 +60,11 @@ function App() {
     };
   }, [state.services.camera]);
 
-  // TODO [Basic] Fungsi untuk memulai loop deteksi
   const startDetection = useCallback(() => {
     let animationId = null;
     let isActive = true;
+    let consecutiveCount = 0;
+    let lastDetectedClass = '';
 
     const detectLoop = async () => {
       if (!isActive) {
@@ -90,31 +91,43 @@ function App() {
         const result = await state.services.detector.predict(canvas);
 
         if (isValidDetection(result)) {
-          isActive = false;
-          isRunningRef.current = false;
-          actions.setRunning(false);
-          actions.setAppState('analyzing');
-          state.services.camera?.stopCamera();
+          if (result.className === lastDetectedClass) {
+            consecutiveCount++;
+          } else {
+            lastDetectedClass = result.className;
+            consecutiveCount = 1;
+          }
 
-          await createDelay(APP_CONFIG.analyzingDelay);
+          if (consecutiveCount >= 5) {
+            isActive = false;
+            isRunningRef.current = false;
+            actions.setRunning(false);
+            actions.setAppState('analyzing');
+            state.services.camera?.stopCamera();
 
-          actions.setDetectionResult(result);
-          actions.setAppState('result');
-          actions.setFunFactData(null);
+            await createDelay(APP_CONFIG.analyzingDelay);
 
-          if (state.services.generator?.isReady()) {
-            await createDelay(APP_CONFIG.factsGenerationDelay);
-            try {
-              const funFactResult = await state.services.generator.generateFacts(result.className);
-              actions.setFunFactData(funFactResult);
-            } catch (generationError) {
-              console.error('❌ Gagal menghasilkan fakta unik', generationError);
+            actions.setDetectionResult(result);
+            actions.setAppState('result');
+            actions.setFunFactData(null);
+
+            if (state.services.generator?.isReady()) {
+              await createDelay(APP_CONFIG.factsGenerationDelay);
+              try {
+                const funFactResult = await state.services.generator.generateFacts(result.className);
+                actions.setFunFactData(funFactResult);
+              } catch (generationError) {
+                console.error('❌ Gagal menghasilkan fakta unik', generationError);
+                actions.setFunFactData('error');
+              }
+            } else {
               actions.setFunFactData('error');
             }
-          } else {
-            actions.setFunFactData('error');
+            return;
           }
-          return;
+        } else {
+          consecutiveCount = 0;
+          lastDetectedClass = '';
         }
       } catch (error) {
         console.error('❌ Error deteksi', error);
