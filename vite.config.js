@@ -54,6 +54,10 @@ export default defineConfig({
             label: 'Detection result with fun fact info'
           }
         ]
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module'
       }
     })
   ],
