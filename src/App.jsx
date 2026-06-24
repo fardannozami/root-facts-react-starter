@@ -29,8 +29,8 @@ function App() {
       } catch (error) {
 
       }
-    }
-  }, [])
+    };
+  }, []);
   return (
     <div className="app-container">
       <Header modelStatus={state.modelStatus} />
