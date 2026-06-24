@@ -104,7 +104,7 @@ export const createModelProgressCallback = (onProgress, throttleMs = 200) => {
 
     const encoder = average(encoderFiles);
     const decoder = average(decoderFiles);
-    const message = `Mengunduh model AI... Encoder: ${encoder}% | Decoder: ${decoder}%`;
+    const message = `Memuat model AI... Encoder: ${encoder}% | Decoder: ${decoder}%`;
 
     // Throttling: hanya panggil callback jika ada perubahan dan interval terpenuhi
     if (message === lastMessage) return;
