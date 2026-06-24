@@ -25,3 +25,21 @@ export const getCameraErrorMessage = (error) => {
 
   return errorMessages[error.name] || 'Gagal memulai kamera';
 };
+
+export const updatePerformanceStats = (stats, operationTime) => {
+  stats.operations++;
+  stats.totalTime += operationTime;
+  stats.averageTime = stats.totalTime / stats.operations;
+  return stats;
+};
+
+export const createPerformanceResult = (operationTime, backend, averageTime, totalOperations) => ({
+  operationTime: Math.round(operationTime),
+  backend: backend,
+  averageTime: Math.round(averageTime),
+  totalOperations: totalOperations
+});
+
+export const logPerformance = (backend, operationTime, averageTime) => {
+  console.log(`⚡ ${backend.toUpperCase()}: ${Math.round(operationTime)}ms (avg: ${Math.round(averageTime)}ms)`);
+};
