@@ -72,3 +72,56 @@ export const getCameraConstraints = (selectedCameraId) => {
     }
   };
 };
+
+export const createModelProgressCallback = (onProgress, throttleMs = 200) => {
+  const fileProgress = {};
+  let lastMessage = '';
+  let lastCallTime = 0;
+
+  return (progress) => {
+    // Abaikan jika bukan event progress atau tidak ada file
+    if (progress.status !== 'progress' || !progress.file) return;
+
+    // Filter hanya file encoder dan decoder
+    const isEncoder = progress.file.includes('encoder');
+    const isDecoder = progress.file.includes('decoder');
+    if (!isEncoder && !isDecoder) return;
+
+    // Update progress untuk file ini
+    fileProgress[progress.file] = Math.round(progress.progress);
+
+    // Hitung rata-rata progress untuk encoder dan decoder
+    const encoderFiles = Object.entries(fileProgress)
+      .filter(([file]) => file.includes('encoder'));
+    const decoderFiles = Object.entries(fileProgress)
+      .filter(([file]) => file.includes('decoder'));
+
+    const average = (entries) => {
+      if (entries.length === 0) return 0;
+      const sum = entries.reduce((acc, [, val]) => acc + val, 0);
+      return Math.round(sum / entries.length);
+    };
+
+    const encoder = average(encoderFiles);
+    const decoder = average(decoderFiles);
+    const message = `Mengunduh model AI... Encoder: ${encoder}% | Decoder: ${decoder}%`;
+
+    // Throttling: hanya panggil callback jika ada perubahan dan interval terpenuhi
+    if (message === lastMessage) return;
+
+    const now = Date.now();
+    if (now - lastCallTime < throttleMs) return;
+    lastCallTime = now;
+    lastMessage = message;
+
+    if (onProgress && typeof onProgress === 'function') {
+      onProgress({ status: 'downloading', encoder, decoder, message });
+    }
+  };
+};
+
+export const createPerformanceStats = () => ({
+  operations: 0,
+  totalTime: 0,
+  averageTime: 0
+});

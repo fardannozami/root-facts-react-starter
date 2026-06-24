@@ -39,3 +39,13 @@ export const CAMERA_CONFIG = {
   desktopFacingMode: 'user',
   mobileFacingMode: 'environment'
 };
+
+export const TRANSFORMERS_CONFIG = {
+  modelName: 'Xenova/LaMini-Flan-T5-77M',
+  maxTokens: 150,
+  temperature: 0.7,
+  topP: 0.8,
+  doSample: true,
+  repetitionPenalty: 1.2,
+  generationDelay: 500,
+};
