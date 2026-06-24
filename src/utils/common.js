@@ -1,3 +1,5 @@
+import { CAMERA_CONFIG, TENSORFLOW_CONFIG } from './config.js';
+
 export const logError = (context, error) => {
   console.error(`❌ ${context}:`, error);
 };
@@ -42,4 +44,31 @@ export const createPerformanceResult = (operationTime, backend, averageTime, tot
 
 export const logPerformance = (backend, operationTime, averageTime) => {
   console.log(`⚡ ${backend.toUpperCase()}: ${Math.round(operationTime)}ms (avg: ${Math.round(averageTime)}ms)`);
+};
+
+export const getCameraConfig = () => {
+  const mobile = isMobileDevice();
+  return {
+    defaultFPS: CAMERA_CONFIG.defaultFPS,
+    fpsRange: CAMERA_CONFIG.fpsRange,
+    resolution: mobile
+      ? CAMERA_CONFIG.mobileResolution
+      : CAMERA_CONFIG.desktopResolution,
+    facingMode: mobile
+      ? CAMERA_CONFIG.mobileFacingMode
+      : CAMERA_CONFIG.desktopFacingMode
+  };
+};
+
+export const getCameraConstraints = (selectedCameraId) => {
+  const config = getCameraConfig();
+  return {
+    video: {
+      deviceId: selectedCameraId ? { exact: selectedCameraId } : undefined,
+      width: { ideal: config.resolution.width },
+      height: { ideal: config.resolution.height },
+      facingMode: config.facingMode,
+      frameRate: { ideal: config.defaultFPS }
+    }
+  };
 };
