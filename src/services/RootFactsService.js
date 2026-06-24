@@ -66,22 +66,22 @@ export class RootFactsService {
 
       switch (this.currentTone) {
       case 'funny':
-        prompt = `Tulis satu fakta menarik yang sangat lucu, humoris, dan menghibur tentang sayuran ${vegetableName} dalam bahasa Indonesia.`;
+        prompt = `Write a funny, humorous, and entertaining fun fact about the vegetable ${vegetableName}.`;
         break;
       case 'professional':
-        prompt = `Tulis satu fakta ilmiah, edukatif, dan detail profesional tentang sayuran ${vegetableName} dalam bahasa Indonesia.`;
+        prompt = `Write a scientifically detailed, educational, and professional fun fact about the vegetable ${vegetableName}.`;
         break;
       case 'casual':
-        prompt = `Tulis satu fakta santai, santun, dan gaul tentang sayuran ${vegetableName} dalam bahasa Indonesia.`;
+        prompt = `Write a casual, friendly, and cool fun fact about the vegetable ${vegetableName}.`;
         break;
       case 'normal':
       default:
-        prompt = `Tulis satu fakta unik dan menarik tentang sayuran ${vegetableName} dalam bahasa Indonesia secara singkat.`;
+        prompt = `Write an interesting and unique fun fact about the vegetable ${vegetableName}.`;
         break;
       }
 
       const response = await this.generator(prompt, {
-        max_new_tokens: this.config.maxTokens || 150,
+        max_new_tokens: Math.min(this.config.maxTokens || 150, 150),
         temperature: this.config.temperature !== undefined ? this.config.temperature : 0.7,
         top_p: this.config.topP || 0.8,
         do_sample: this.config.doSample !== undefined ? this.config.doSample : true,
