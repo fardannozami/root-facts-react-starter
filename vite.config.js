@@ -16,22 +16,10 @@ export default defineConfig({
         clientsClaim: true,
         runtimeCaching: [
           {
-            urlPattern: ({ request }) => request.destination === 'document',
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'html-cache',
-            }
-          },
-          {
-            urlPattern: ({ request, url }) =>
-              request.destination === 'script' ||
-              request.destination === 'style' ||
-              url.pathname.includes('.jsx') ||
-              url.pathname.includes('client') ||
-              url.pathname.includes('@react-refresh'),
+            urlPattern: ({ url }) => url.origin === self.location.origin,
             handler: 'StaleWhileRevalidate',
             options: {
-              cacheName: 'static-resources',
+              cacheName: 'dev-assets',
             }
           },
           {
@@ -112,7 +100,7 @@ export default defineConfig({
         ]
       },
       devOptions: {
-        enabled: true,
+        enabled: false,
         type: 'module'
       }
     })
