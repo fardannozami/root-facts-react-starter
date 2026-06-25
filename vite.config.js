@@ -9,11 +9,67 @@ export default defineConfig({
       registerType: 'autoUpdate',
       workbox: {
         globPatterns: [
-          '**/*.{js,css,html,ico,png,svg,json,bin}'
+          '**/*.{js,jsx,css,html,ico,png,svg,json,bin,webmanifest}'
         ],
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50MB
         skipWaiting: true,
-        clientsClaim: true
+        clientsClaim: true,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === 'document',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'html-cache',
+            }
+          },
+          {
+            urlPattern: ({ request, url }) =>
+              request.destination === 'script' ||
+              request.destination === 'style' ||
+              url.pathname.includes('.jsx') ||
+              url.pathname.includes('client') ||
+              url.pathname.includes('@react-refresh'),
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/huggingface\.co\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'huggingface-models',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
       },
       manifest: {
         name: 'RootFacts - AI Plant/Root Recognition',
