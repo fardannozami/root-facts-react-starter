@@ -49,7 +49,21 @@ export default defineConfig({
             options: {
               cacheName: 'huggingface-models',
               expiration: {
-                maxEntries: 10,
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'jsdelivr-cdn',
+              expiration: {
+                maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 Days
               },
               cacheableResponse: {
@@ -100,7 +114,7 @@ export default defineConfig({
         ]
       },
       devOptions: {
-        enabled: false,
+        enabled: true,
         type: 'module'
       }
     })
